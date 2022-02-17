@@ -86,7 +86,10 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 let applicationBuildConfig;
 
 try {
-  applicationBuildConfig = require(paths.appBuildConfig);
+  applicationBuildConfig = require(path.resolve(
+    paths.appPath,
+    "build.config.json"
+  ));
 } catch {
   applicationBuildConfig = {};
 }
@@ -351,7 +354,7 @@ module.exports = function (webpackEnv) {
           ? Object.entries(applicationBuildConfig.alias).reduce(
               (acc, [aliasKey, aliasPath]) => ({
                 ...acc,
-                [aliasKey]: path.resolve(paths.appPath + aliasPath),
+                [aliasKey]: path.resolve(paths.appPath, aliasPath),
               }),
               {}
             )
