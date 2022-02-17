@@ -82,6 +82,15 @@ const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
+// Application build.config.json require
+let applicationBuildConfig;
+
+try {
+  applicationBuildConfig = require(paths.appBuildConfig);
+} catch {
+  applicationBuildConfig = {};
+}
+
 const hasJsxRuntime = (() => {
   if (process.env.DISABLE_NEW_JSX_TRANSFORM === "true") {
     return false;
@@ -189,9 +198,11 @@ module.exports = function (webpackEnv) {
           loader: require.resolve(preProcessor),
           options: {
             sourceMap: true,
-            ...(preProcessor === "sass-loader"
+            ...(preProcessor === "sass-loader" &&
+            applicationBuildConfig["sass-additional-data"]
               ? {
-                  additionalData: '@import "./src/styles/resource.scss";',
+                  additionalData:
+                    applicationBuildConfig["sass-additional-data"],
                   sassOptions: {
                     outputStyle: "compressed",
                   },
@@ -336,7 +347,15 @@ module.exports = function (webpackEnv) {
           "scheduler/tracing": "scheduler/tracing-profiling",
         }),
         ...(modules.webpackAliases || {}),
-        "@": paths.appSrc,
+        ...(applicationBuildConfig[alias]
+          ? Object.entries(applicationBuildConfig[alias]).reduce(
+              (acc, [aliasKey, aliasPath]) => ({
+                ...acc,
+                [aliasKey]: path.resolve(paths.appPath + aliasPath),
+              }),
+              {}
+            )
+          : {}),
       },
       plugins: [
         // Prevents users from importing files from outside of src/ (or node_modules/).
