@@ -131,8 +131,13 @@ module.exports = function (webpackEnv) {
   const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
       (isEnvDevelopment ||
-        applicationBuildConfig.template === templates.reactComponentLibrary) &&
-        require.resolve("style-loader"),
+        applicationBuildConfig.template ===
+          templates.reactComponentLibrary) && {
+        loader: require.resolve("style-loader"),
+        options: {
+          injectType: applicationBuildConfig.stylesInjectType || "styleTag",
+        },
+      },
       isEnvProduction &&
         applicationBuildConfig.template !== templates.reactComponentLibrary && {
           loader: MiniCssExtractPlugin.loader,
@@ -266,8 +271,8 @@ module.exports = function (webpackEnv) {
 
       ...(applicationBuildConfig.template === templates.reactComponentLibrary
         ? {
-            fileName: "[name].js",
-            chunkFileName: "[name].js",
+            filename: "[name].js",
+            chunkFilename: "[name].js",
             libraryTarget: "umd",
           }
         : {}),
@@ -835,5 +840,10 @@ module.exports = function (webpackEnv) {
     // Turn off performance processing because we utilize
     // our own hints via the FileSizeReporter
     performance: false,
+    externals: applicationBuildConfig.template ===
+      templates.reactComponentLibrary && {
+      react: "react",
+      "react-dom": "react-dom",
+    },
   };
 };
