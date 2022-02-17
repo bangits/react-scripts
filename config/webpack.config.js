@@ -347,8 +347,8 @@ module.exports = function (webpackEnv) {
           "scheduler/tracing": "scheduler/tracing-profiling",
         }),
         ...(modules.webpackAliases || {}),
-        ...(applicationBuildConfig[alias]
-          ? Object.entries(applicationBuildConfig[alias]).reduce(
+        ...(applicationBuildConfig.alias
+          ? Object.entries(applicationBuildConfig.alias).reduce(
               (acc, [aliasKey, aliasPath]) => ({
                 ...acc,
                 [aliasKey]: path.resolve(paths.appPath + aliasPath),
