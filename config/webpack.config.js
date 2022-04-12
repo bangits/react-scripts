@@ -470,7 +470,7 @@ module.exports = function (webpackEnv) {
                   applicationBuildConfig.include.map((includePath) =>
                     path.resolve(paths.appPath, includePath)
                   ),
-              ],
+              ].filter(Boolean),
               loader: require.resolve("babel-loader"),
               options: {
                 customize: require.resolve(
