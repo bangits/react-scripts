@@ -452,6 +452,7 @@ module.exports = function (webpackEnv) {
                   loader: require.resolve("file-loader"),
                   options: {
                     name: "static/media/[name].[hash].[ext]",
+                    esModule: false,
                   },
                 },
               ],
