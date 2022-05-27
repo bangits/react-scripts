@@ -383,15 +383,16 @@ module.exports = function (webpackEnv) {
         // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
         // please link the files into your node_modules/ and let module-resolution kick in.
         // Make sure your source files are compiled, as they will not be processed in any way.
-        new ModuleScopePlugin(paths.appSrc, [
-          paths.appPackageJson,
-          reactRefreshRuntimeEntry,
-          reactRefreshWebpackPluginRuntimeEntry,
-          babelRuntimeEntry,
-          babelRuntimeEntryHelpers,
-          babelRuntimeRegenerator,
-        ]),
-      ],
+        applicationBuildConfig.repository !== "monorepository" &&
+          new ModuleScopePlugin(paths.appSrc, [
+            paths.appPackageJson,
+            reactRefreshRuntimeEntry,
+            reactRefreshWebpackPluginRuntimeEntry,
+            babelRuntimeEntry,
+            babelRuntimeEntryHelpers,
+            babelRuntimeRegenerator,
+          ]),
+      ].filter(Boolean),
     },
     module: {
       strictExportPresence: true,
@@ -463,7 +464,13 @@ module.exports = function (webpackEnv) {
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
-              include: paths.appSrc,
+              include: [
+                paths.appSrc,
+                applicationBuildConfig.include &&
+                  applicationBuildConfig.include.map((includePath) =>
+                    path.resolve(paths.appPath, includePath)
+                  ),
+              ].filter(Boolean),
               loader: require.resolve("babel-loader"),
               options: {
                 customize: require.resolve(
