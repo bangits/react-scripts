@@ -447,14 +447,14 @@ module.exports = function (webpackEnv) {
                     ref: true,
                   },
                 },
-                {
+                !applicationBuildConfig.removeFileLoader && {
                   loader: require.resolve("file-loader"),
                   options: {
                     name: "static/media/[name].[hash].[ext]",
                     esModule: false,
                   },
                 },
-              ],
+              ].filter(Boolean),
               issuer: {
                 and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
               },
